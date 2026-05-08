@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI in My Classroom — Barbara Anna Zielonka</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0e0e0e;
+    --paper: #f5f0e8;
+    --warm: #f0e6d3;
+    --accent: #c8401a;
+    --accent2: #2d6a4f;
+    --accent3: #1a4a7a;
+    --accent4: #7a3a8a;
+    --muted: #6b6560;
+    --rule: #d4c9b8;
+    --compass: #1a5c7a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background-color: var(--paper); color: var(--ink); overflow-x: hidden; }
+
+  /* ── TOP BAR ── */
+  .top-bar {
+    background: #1a1a1a;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 8px 40px;
+    gap: 6px;
+  }
+  .lang-btn {
+    background: transparent;
+    border: 1px solid #444;
+    border-radius: 6px;
+    color: #aaa;
+    font-size: 20px;
+    width: 38px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    line-height: 1;
+    padding: 0;
+  }
+  .lang-btn:hover { border-color: #888; transform: scale(1.08); }
+  .lang-btn.active-lang { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(200,64,26,0.3); }
+  .lang-btn title { display: none; }
+
+  /* ── HEADER ── */
+  header { background: var(--ink); color: var(--paper); }
+  .header-inner {
+    max-width: 1200px; margin: 0 auto; padding: 52px 40px 44px;
+    display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 40px;
+  }
+  .author-byline { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+  .author-name { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 400; color: #e0d8cc; }
+  .author-divider { width: 1px; height: 16px; background: #555; }
+  .author-school { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); }
+  header h1 { font-family: 'Playfair Display', serif; font-size: clamp(38px, 6vw, 72px); font-weight: 900; line-height: 1.0; letter-spacing: -1px; }
+  header h1 em { font-style: italic; color: var(--accent); }
+  .header-sub { margin-top: 18px; font-size: 16px; color: #a09890; font-weight: 300; max-width: 500px; line-height: 1.6; }
+  .header-stats { display: flex; flex-direction: column; gap: 20px; text-align: right; }
+  .stat { border-right: 3px solid var(--accent); padding-right: 16px; }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 700; color: var(--paper); line-height: 1; }
+  .stat-label { font-size: 11px; color: #a09890; letter-spacing: 2px; text-transform: uppercase; font-family: 'DM Mono', monospace; }
+  .header-rule { height: 4px; background: linear-gradient(90deg, var(--accent) 0%, var(--accent2) 33%, var(--accent3) 66%, var(--accent4) 100%); }
+
+  /* ── FILTER BAR ── */
+  .filter-bar { background: var(--warm); border-bottom: 1px solid var(--rule); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 20px rgba(0,0,0,0.08); }
+  .filter-inner { max-width: 1200px; margin: 0 auto; padding: 0 40px; display: flex; overflow-x: auto; scrollbar-width: none; }
+  .filter-inner::-webkit-scrollbar { display: none; }
+  .filter-btn {
+    padding: 14px 16px; border: none; background: transparent; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--muted);
+    border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.2s;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .filter-btn:hover { color: var(--ink); }
+  .filter-btn.active { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
+  .filter-btn .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .filter-btn .count { font-family: 'DM Mono', monospace; font-size: 10px; background: var(--rule); padding: 2px 6px; border-radius: 10px; }
+
+  /* ── MAIN ── */
+  main { max-width: 1200px; margin: 0 auto; padding: 60px 40px; }
+
+  /* ── INTRO BAND ── */
+  .intro-band {
+    background: white; border: 1px solid var(--rule); border-radius: 4px;
+    padding: 32px 40px; margin-bottom: 48px;
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px;
+  }
+  .intro-item h3 { font-family: 'Playfair Display', serif; font-size: 16px; margin-bottom: 8px; }
+  .intro-item p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+  /* ── COMPASS SPOTLIGHT ── */
+  .compass-spotlight {
+    background: var(--compass);
+    border-radius: 6px;
+    padding: 0;
+    margin-bottom: 60px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    box-shadow: 0 8px 40px rgba(26,92,122,0.3);
+  }
+  .compass-left { padding: 44px 48px; color: white; }
+  .compass-kicker {
+    font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 3px;
+    text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .compass-kicker::before { content: ''; display: block; width: 24px; height: 1px; background: rgba(255,255,255,0.4); }
+  .compass-title { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 900; line-height: 1.1; margin-bottom: 16px; }
+  .compass-title em { font-style: italic; color: #7dd4f0; }
+  .compass-desc { font-size: 15px; color: rgba(255,255,255,0.8); line-height: 1.7; max-width: 480px; margin-bottom: 28px; }
+  .compass-dimensions {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 32px;
+  }
+  .compass-dim {
+    background: rgba(255,255,255,0.1); border-radius: 4px; padding: 12px 14px;
+    border-left: 3px solid rgba(125,212,240,0.6);
+  }
+  .compass-dim-num { font-family: 'DM Mono', monospace; font-size: 10px; color: #7dd4f0; letter-spacing: 1px; margin-bottom: 4px; }
+  .compass-dim-name { font-size: 13px; font-weight: 600; color: white; line-height: 1.3; }
+  .compass-cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: white; color: var(--compass);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700;
+    padding: 14px 28px; border-radius: 4px; text-decoration: none;
+    transition: all 0.2s; letter-spacing: 0.3px;
+  }
+  .compass-cta:hover { background: #7dd4f0; transform: translateX(3px); }
+  .compass-right {
+    background: rgba(0,0,0,0.2);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 40px 32px; gap: 16px; text-align: center;
+  }
+  .compass-badge {
+    width: 120px; height: 120px; border-radius: 50%;
+    background: rgba(255,255,255,0.1); border: 3px solid rgba(125,212,240,0.5);
+    display: flex; align-items: center; justify-content: center; font-size: 52px;
+  }
+  .compass-meta { color: rgba(255,255,255,0.7); font-size: 13px; line-height: 1.6; }
+  .compass-meta strong { color: white; display: block; font-size: 15px; margin-bottom: 4px; }
+  .compass-pill {
+    display: inline-block; background: rgba(125,212,240,0.2); border: 1px solid rgba(125,212,240,0.4);
+    color: #7dd4f0; font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 10px; border-radius: 20px;
+  }
+
+  /* ── SECTIONS ── */
+  .section { margin-bottom: 72px; display: none; }
+  .section.visible { display: block; animation: fadeUp 0.4s ease; }
+  .section-header { display: flex; align-items: baseline; gap: 20px; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid var(--rule); }
+  .section-icon { font-size: 28px; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; }
+  .section-count { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); letter-spacing: 1px; }
+  .section-desc { font-size: 14px; color: var(--muted); margin-left: auto; max-width: 320px; text-align: right; line-height: 1.5; }
+
+  /* ── CARDS ── */
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+  .card {
+    background: white; border: 1px solid var(--rule); border-radius: 4px; overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column;
+    cursor: pointer; text-decoration: none; color: inherit;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.12); }
+  .card-accent { height: 4px; }
+  .card-body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
+  .card-tag { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+  .card-title { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; line-height: 1.35; margin-bottom: 12px; flex: 1; }
+  .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+  .card-date { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+  .card-arrow { font-size: 16px; color: var(--muted); transition: transform 0.2s; }
+  .card:hover .card-arrow { transform: translateX(4px); }
+  .featured-card { background: var(--ink); color: var(--paper); grid-column: span 2; }
+  .featured-card .card-title { font-size: 22px; color: var(--paper); }
+  .featured-card .card-footer { border-top-color: #333; }
+  .featured-card .card-date { color: #888; }
+  .featured-card .card-arrow { color: #888; }
+  .new-badge {
+    display: inline-block; background: var(--accent); color: white;
+    font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1.5px;
+    text-transform: uppercase; padding: 2px 7px; border-radius: 3px;
+    margin-left: 8px; vertical-align: middle; position: relative; top: -1px;
+  }
+
+  /* ── CATEGORY COLORS ── */
+  [data-cat="ethics"]    .card-accent { background: #c8401a; }
+  [data-cat="ethics"]    .card-tag    { color: #c8401a; }
+  [data-cat="critical"]  .card-accent { background: #2d6a4f; }
+  [data-cat="critical"]  .card-tag    { color: #2d6a4f; }
+  [data-cat="democracy"] .card-accent { background: #1a4a7a; }
+  [data-cat="democracy"] .card-tag    { color: #1a4a7a; }
+  [data-cat="creative"]  .card-accent { background: #7a3a8a; }
+  [data-cat="creative"]  .card-tag    { color: #7a3a8a; }
+  [data-cat="tools"]     .card-accent { background: #8a6a1a; }
+  [data-cat="tools"]     .card-tag    { color: #8a6a1a; }
+  [data-cat="future"]    .card-accent { background: #5a1a6a; }
+  [data-cat="future"]    .card-tag    { color: #5a1a6a; }
+  [data-cat="society"]   .card-accent { background: #1a6a6a; }
+  [data-cat="society"]   .card-tag    { color: #1a6a6a; }
+
+  /* ── FOOTER ── */
+  footer { background: var(--ink); padding: 40px; text-align: center; font-family: 'DM Mono', monospace; font-size: 12px; color: #888; line-height: 2; }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @keyframes fadeUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+
+  @media (max-width: 900px) {
+    .compass-spotlight { grid-template-columns: 1fr; }
+    .compass-right { display: none; }
+  }
+  @media (max-width: 768px) {
+    .top-bar { padding: 8px 20px; }
+    .header-inner { grid-template-columns: 1fr; padding: 36px 24px 28px; }
+    .header-stats { flex-direction: row; }
+    .stat { border-right: none; border-left: 3px solid var(--accent); padding-right: 0; padding-left: 12px; }
+    main { padding: 40px 24px; }
+    .filter-inner { padding: 0 16px; }
+    .intro-band { grid-template-columns: 1fr; padding: 24px; gap: 24px; }
+    .featured-card { grid-column: span 1; }
+    .section-desc { display: none; }
+    .cards { grid-template-columns: 1fr; }
+    .compass-dimensions { grid-template-columns: 1fr; }
+    .compass-left { padding: 32px 28px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LANGUAGE BAR — flags only -->
+<div class="top-bar">
+  <button class="lang-btn active-lang" id="btn-en" onclick="setLang('en')" title="English">🇬🇧</button>
+  <button class="lang-btn" id="btn-no" onclick="setLang('no')" title="Norsk">🇳🇴</button>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div>
+      <div class="author-byline">
+        <span class="author-name">Barbara Anna Zielonka</span>
+        <div class="author-divider"></div>
+        <span class="author-school">Nannestad High School</span>
+      </div>
+      <h1>
+        <span data-en="AI in My" data-no="KI i mitt">AI in My</span><br>
+        <em><span data-en="Classroom" data-no="Klasserom">Classroom</span></em>
+      </h1>
+      <p class="header-sub">
+        <span data-en="A collection of lesson plans and classroom experiments exploring how artificial intelligence can transform English education: critically, creatively, and responsibly."
+              data-no="En samling undervisningsopplegg og klasseromsforsøk som utforsker hvordan kunstig intelligens kan transformere engelskundervisningen — kritisk, kreativt og ansvarlig.">
+          A collection of lesson plans and classroom experiments exploring how artificial intelligence can transform English education: critically, creatively, and responsibly.
+        </span>
+      </p>
+    </div>
+    <div class="header-stats">
+      <div class="stat">
+        <div class="stat-num">39+</div>
+        <div class="stat-label"><span data-en="Lesson Plans" data-no="Undervisningsopplegg">Lesson Plans</span></div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">7</div>
+        <div class="stat-label"><span data-en="Categories" data-no="Kategorier">Categories</span></div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">'23–'26</div>
+        <div class="stat-label"><span data-en="Published" data-no="Publisert">Published</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="header-rule"></div>
+</header>
+
+<!-- FILTER BAR -->
+<nav class="filter-bar">
+  <div class="filter-inner">
+    <button class="filter-btn active" onclick="filterSection('all',this)">
+      <span class="dot" style="background:#c8401a"></span>
+      <span data-en="All Posts" data-no="Alle innlegg">All Posts</span>
+      <span class="count">39</span>
+    </button>
+    <button class="filter-btn" onclick="filterSection('compass',this)">
+      <span class="dot" style="background:#1a5c7a"></span>
+      <span data-en="🧭 My Tools" data-no="🧭 Mine verktøy">🧭 My Tools</span>
+    </button>
+    <button class="filter-btn" onclick="filterSection('ethics',this)">
+      <span class="dot" style="background:#c8401a"></span>
+      <span data-en="AI Ethics &amp; Society" data-no="KI-etikk &amp; samfunn">AI Ethics &amp; Society</span>
+      <span class="count">8</span>
+    </button>
+    <button class="filter-btn" onclick="filterSection('critical',this)">
+      <span class="dot" style="background:#2d6a4f"></span>
+      <span data-en="Critical Thinking" data-no="Kritisk tenkning">Critical Thinking</span>
+      <span class="count">6</span>
+    </button>
+    <button class="filter-btn" onclick="filterSection('democracy',this)">
+      <span class="dot" style="background:#1a4a7a"></span>
+      <span data-en="Democracy &amp; Politics" data-no="Demokrati &amp; politikk">Democracy &amp; Politics</span>
+      <span class="count">6</span>
+    </button>
+    <button class="filter-btn" onclick="filterSection('creative',this)">
+      <span class="dot" style="background:#7a3a8a"></span>
+      <span data-en="Creative &amp; Multimodal" data-no="Kreativt &amp; multimodalt">Creative &amp; Multimodal</span>
+      <span class="count">7</span>
+    </button>
+    <button class="filter-btn" onclick="filterSection('tools',this)">
+      <span class="dot" style="background:#8a6a1a"></span>
+      <span data-en="AI Writing &amp; Tools" data-no="KI-skriving &amp; verktøy">AI Writing &amp; Tools</span>
+      <span class="count">7</span>
+    </button>
+    <button class="filter-btn" onclick="filterSection('future',this)">
+      <span class="dot" style="background:#5a1a6a"></span>
+      <span data-en="Future &amp; Careers" data-no="Fremtid &amp; karriere">Future &amp; Careers</span>
+      <span class="count">5</span>
+    </button>
+    <button class="filter-btn" onclick="filterSection('society',this)">
+      <span class="dot" style="background:#1a6a6a"></span>
+      <span data-en="AI Identity &amp; Culture" data-no="KI-identitet &amp; kultur">AI Identity &amp; Culture</span>
+      <span class="count">5</span>
+    </button>
+  </div>
+</nav>
+
+<main>
+
+  <!-- INTRO BAND -->
+  <div class="intro-band" id="intro-band">
+    <div class="intro-item">
+      <h3>🎯 <span data-en="Why This Collection" data-no="Hvorfor denne samlingen">Why This Collection</span></h3>
+      <p><span data-en="Each lesson uses AI as both a subject of inquiry and a learning tool — helping students think critically about the technology shaping their world."
+               data-no="Hvert opplegg bruker KI som undersøkelsesobjekt og læringsverktøy — og hjelper elevene til å tenke kritisk om teknologien som former verden.">
+        Each lesson uses AI as both a subject of inquiry and a learning tool — helping students think critically about the technology shaping their world.</span></p>
+    </div>
+    <div class="intro-item">
+      <h3>📚 <span data-en="Subject Focus" data-no="Faglig fokus">Subject Focus</span></h3>
+      <p><span data-en="Designed primarily for English vg1, English 1 &amp; English 2 at the Norwegian VGS level, but adaptable across subjects and year groups."
+               data-no="Primært utviklet for Engelsk vg1, Engelsk 1 og Engelsk 2 på videregående, men kan tilpasses andre fag og trinn.">
+        Designed primarily for English vg1, English 1 &amp; English 2 at the Norwegian VGS level, but adaptable across subjects and year groups.</span></p>
+    </div>
+    <div class="intro-item">
+      <h3>🔗 <span data-en="How to Use" data-no="Slik bruker du det">How to Use</span></h3>
+      <p><span data-en="Click any card to read the full lesson plan. Filter by category, or try the AI Fluency Compass before you start."
+               data-no="Klikk på et kort for å lese det fullstendige opplegget. Filtrer etter kategori, eller prøv KI-kompassen før du begynner.">
+        Click any card to read the full lesson plan. Filter by category, or try the AI Fluency Compass before you start.</span></p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════
+       COMPASS SPOTLIGHT (always visible on "all", filterable)
+  ════════════════════════════════ -->
+  <section class="section visible" id="sec-compass" data-cat="compass" style="margin-bottom:60px;">
+    <div class="compass-spotlight">
+      <div class="compass-left">
+        <div class="compass-kicker">
+          <span data-en="My Own Tool · Built for This Classroom" data-no="Mitt eget verktøy · Laget for dette klasserommet">My Own Tool · Built for This Classroom</span>
+        </div>
+        <h2 class="compass-title">
+          <span data-en="AI Fluency" data-no="KI-kompetanse">AI Fluency</span><br>
+          <em><span data-en="Compass" data-no="Kompass">Compass</span></em>
+        </h2>
+        <p class="compass-desc">
+          <span data-en="A free 12-question self-assessment that takes 2 minutes. Students and teachers answer scenario-based questions and receive a personalised profile across four dimensions of AI fluency. No sign-up. No data collected. Just honest reflection."
+                data-no="En gratis egenvurdering med 12 spørsmål som tar 2 minutter. Elever og lærere svarer på scenariobaserte spørsmål og får en personlig profil på tvers av fire dimensjoner av KI-kompetanse. Ingen påmelding. Ingen data samles inn. Bare ærlig refleksjon.">
+            A free 12-question self-assessment that takes 2 minutes. Students and teachers answer scenario-based questions and receive a personalised profile across four dimensions of AI fluency. No sign-up. No data collected. Just honest reflection.
+          </span>
+        </p>
+        <div class="compass-dimensions">
+          <div class="compass-dim">
+            <div class="compass-dim-num">01</div>
+            <div class="compass-dim-name"><span data-en="Technical Literacy &amp; Operational Skill" data-no="Teknisk kompetanse og operasjonelle ferdigheter">Technical Literacy &amp; Operational Skill</span></div>
+          </div>
+          <div class="compass-dim">
+            <div class="compass-dim-num">02</div>
+            <div class="compass-dim-name"><span data-en="Critical Evaluation &amp; Fact-Checking" data-no="Kritisk vurdering og fakta-sjekking">Critical Evaluation &amp; Fact-Checking</span></div>
+          </div>
+          <div class="compass-dim">
+            <div class="compass-dim-num">03</div>
+            <div class="compass-dim-name"><span data-en="Ethical &amp; Societal Awareness" data-no="Etisk og samfunnsmessig bevissthet">Ethical &amp; Societal Awareness</span></div>
+          </div>
+          <div class="compass-dim">
+            <div class="compass-dim-num">04</div>
+            <div class="compass-dim-name"><span data-en="Creative &amp; Cognitive Integration" data-no="Kreativ og kognitiv integrasjon">Creative &amp; Cognitive Integration</span></div>
+          </div>
+        </div>
+        <a class="compass-cta" href="https://barbaraannazielonka-commits.github.io/AIFluencyCompasslb/" target="_blank">
+          <span data-en="Try the Compass →" data-no="Prøv kompassen →">Try the Compass →</span>
+        </a>
+      </div>
+      <div class="compass-right">
+        <div class="compass-badge">🧭</div>
+        <div class="compass-meta">
+          <strong><span data-en="Free &amp; Open" data-no="Gratis og åpen">Free &amp; Open</span></strong>
+          <span data-en="No login · No data collected · 2 minutes" data-no="Ingen innlogging · Ingen data · 2 minutter">No login · No data collected · 2 minutes</span>
+        </div>
+        <span class="compass-pill"><span data-en="self-assessment tool" data-no="egenvurderingsverktøy">self-assessment tool</span></span>
+        <div class="compass-meta" style="margin-top:8px;">
+          <span data-en="Also read the full blog post about why it was built →" data-no="Les også blogginnlegget om hvorfor det ble laget →">
+            <a href="https://aiadvisoryboards.wordpress.com/2026/04/28/ai-fluency-compass/" target="_blank" style="color:#7dd4f0;text-decoration:none;font-size:12px;">
+              <span data-en="Read the story behind it" data-no="Les historien bak det">Read the story behind it</span> →
+            </a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECOND TOOL: Human Skills -->
+  <section class="section visible" id="sec-humanskills" data-cat="compass" style="margin-bottom:60px;">
+    <div class="compass-spotlight" style="background:#2d5a27;">
+      <div class="compass-left">
+        <div class="compass-kicker">
+          <span data-en="My Own Tool · Built for This Classroom" data-no="Mitt eget verktøy · Laget for dette klasserommet">My Own Tool · Built for This Classroom</span>
+        </div>
+        <h2 class="compass-title">
+          <span data-en="Human Skills" data-no="Menneskelige ferdigheter">Human Skills</span><br>
+          <em><span data-en="in the Age of AI" data-no="i KI-alderen">in the Age of AI</span></em>
+        </h2>
+        <p class="compass-desc">
+          <span data-en="A self-assessment for students that asks: what kind of person are you becoming? Students discover which human skills they've already developed — and which ones to grow next. Because AI can write, code, and search. It cannot be you."
+                data-no="En egenvurdering for elever som spør: hvilken person blir du? Elevene oppdager hvilke menneskelige ferdigheter de allerede har utviklet — og hvilke de bør utvikle videre. For KI kan skrive, kode og søke. Den kan ikke være deg.">
+            A self-assessment for students that asks: what kind of person are you becoming? Students discover which human skills they've already developed — and which ones to grow next. Because AI can write, code, and search. It cannot be you.
+          </span>
+        </p>
+        <div class="compass-dimensions">
+          <div class="compass-dim">
+            <div class="compass-dim-num">01</div>
+            <div class="compass-dim-name"><span data-en="Core Skills — Self-knowledge &amp; Resilience" data-no="Kjerneferdigheter — Selvkunnskap og motstandskraft">Core Skills — Self-knowledge &amp; Resilience</span></div>
+          </div>
+          <div class="compass-dim">
+            <div class="compass-dim-num">02</div>
+            <div class="compass-dim-name"><span data-en="Social Skills — Empathy &amp; Collaboration" data-no="Sosiale ferdigheter — Empati og samarbeid">Social Skills — Empathy &amp; Collaboration</span></div>
+          </div>
+          <div class="compass-dim">
+            <div class="compass-dim-num">03</div>
+            <div class="compass-dim-name"><span data-en="Thinking Skills — Critical &amp; Creative Thought" data-no="Tenkeferdigheter — Kritisk og kreativ tenkning">Thinking Skills — Critical &amp; Creative Thought</span></div>
+          </div>
+          <div class="compass-dim">
+            <div class="compass-dim-num">04</div>
+            <div class="compass-dim-name"><span data-en="Personal Growth — Curiosity &amp; Lifelong Learning" data-no="Personlig vekst — Nysgjerrighet og livslang læring">Personal Growth — Curiosity &amp; Lifelong Learning</span></div>
+          </div>
+        </div>
+        <a class="compass-cta" href="https://barbaraannazielonka-commits.github.io/humanskills/" target="_blank" style="color:#2d5a27;">
+          <span data-en="Try the Assessment →" data-no="Prøv vurderingen →">Try the Assessment →</span>
+        </a>
+      </div>
+      <div class="compass-right">
+        <div class="compass-badge">🌱</div>
+        <div class="compass-meta">
+          <strong><span data-en="Free &amp; Open" data-no="Gratis og åpen">Free &amp; Open</span></strong>
+          <span data-en="No login · No data collected · For students" data-no="Ingen innlogging · Ingen data · For elever">No login · No data collected · For students</span>
+        </div>
+        <span class="compass-pill" style="border-color:rgba(144,238,144,0.4);color:#90ee90;background:rgba(144,238,144,0.1);"><span data-en="self-assessment tool" data-no="egenvurderingsverktøy">self-assessment tool</span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ 1: ETHICS ══════════════════════════ -->
+  <section class="section visible" id="sec-ethics" data-cat="ethics">
+    <div class="section-header">
+      <span class="section-icon">⚖️</span>
+      <div>
+        <h2 class="section-title"><span data-en="AI Ethics &amp; Society" data-no="KI-etikk &amp; samfunn">AI Ethics &amp; Society</span></h2>
+        <span class="section-count"><span data-en="8 lesson plans" data-no="8 undervisningsopplegg">8 lesson plans</span></span>
+      </div>
+      <p class="section-desc"><span data-en="Human cost, labour, environment, and ethical dimensions of AI." data-no="Menneskelige kostnader, arbeid, miljø og etiske dimensjoner ved KI.">Human cost, labour, environment, and ethical dimensions of AI.</span></p>
+    </div>
+    <div class="cards">
+      <a class="card featured-card" data-cat="ethics" href="https://aiadvisoryboards.wordpress.com/2024/11/29/the-hidden-labour-behind-ai-development-ai-sweatshops-lesson-plan/" target="_blank">
+        <div class="card-accent" style="background:#c8401a"></div>
+        <div class="card-body">
+          <span class="card-tag" style="color:#e07040">✦ <span data-en="Featured · Ethics" data-no="Utvalgt · Etikk">Featured · Ethics</span></span>
+          <h3 class="card-title"><span data-en="The Hidden Labour Behind AI Development (AI Sweatshops)" data-no="Den skjulte arbeidskraften bak KI-utvikling (KI-sweatshops)">The Hidden Labour Behind AI Development (AI Sweatshops)</span></h3>
+          <p style="color:#a09890;font-size:14px;line-height:1.6;margin-top:8px;"><span data-en="Who trains AI? This lesson uncovers the invisible workforce behind data labelling — and the ethical questions that follow." data-no="Hvem trener KI? Denne leksjonen avdekker den usynlige arbeidsstyrken bak datamerking og de etiske spørsmålene som følger.">Who trains AI? This lesson uncovers the invisible workforce behind data labelling — and the ethical questions that follow.</span></p>
+          <div class="card-footer"><span class="card-date">Nov 2024</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="ethics" href="https://aiadvisoryboards.wordpress.com/2025/06/01/the-human-cost-of-ai-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Ethics" data-no="Etikk">Ethics</span></span>
+          <h3 class="card-title"><span data-en="The Human Cost of AI" data-no="Den menneskelige kostnaden ved KI">The Human Cost of AI</span></h3>
+          <div class="card-footer"><span class="card-date">Jun 2025</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="ethics" href="https://aiadvisoryboards.wordpress.com/2025/04/25/the-true-cost-of-ai-investigating-the-environmental-and-human-impact-of-generative-ai-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Ethics · Environment" data-no="Etikk · Miljø">Ethics · Environment</span></span>
+          <h3 class="card-title"><span data-en="The True Cost of AI: Environmental &amp; Human Impact of Generative AI" data-no="Den sanne kostnaden ved KI: Miljø- og menneskepåvirkning">The True Cost of AI: Environmental &amp; Human Impact of Generative AI</span></h3>
+          <div class="card-footer"><span class="card-date">Apr 2025</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="ethics" href="https://aiadvisoryboards.wordpress.com/2024/05/28/exploring-the-future-of-ai-energy-demand-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Ethics · Energy" data-no="Etikk · Energi">Ethics · Energy</span></span>
+          <h3 class="card-title"><span data-en="Exploring the Future of AI Energy Demand" data-no="Utforske fremtidens KI-energibehov">Exploring the Future of AI Energy Demand</span></h3>
+          <div class="card-footer"><span class="card-date">May 2024</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="ethics" href="https://aiadvisoryboards.wordpress.com/2025/02/22/exploring-the-ethics-and-impact-of-digital-afterlife-in-eternal-you-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Ethics · Digital Identity" data-no="Etikk · Digital identitet">Ethics · Digital Identity</span></span>
+          <h3 class="card-title"><span data-en="Exploring the Ethics &amp; Impact of Digital Afterlife in Eternal You" data-no="Etikk og digitalt etterliv i Eternal You">Exploring the Ethics &amp; Impact of Digital Afterlife in <em>Eternal You</em></span></h3>
+          <div class="card-footer"><span class="card-date">Feb 2025</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="ethics" href="https://aiadvisoryboards.wordpress.com/2025/05/09/deconstructing-the-human-in-the-machine-avoiding-anthropomorphism-in-ai-systems-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Ethics · Language" data-no="Etikk · Språk">Ethics · Language</span></span>
+          <h3 class="card-title"><span data-en="Deconstructing the Human in the Machine: Avoiding Anthropomorphism in AI" data-no="Dekonstruere det menneskelige i maskinen: Unngå antropomorfisme i KI">Deconstructing the Human in the Machine: Avoiding Anthropomorphism in AI</span></h3>
+          <div class="card-footer"><span class="card-date">May 2025</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="ethics" href="https://aiadvisoryboards.wordpress.com/2024/04/23/embracing-authenticity-exploring-doves-ai-free-promise-in-media-literacy-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Ethics · Media" data-no="Etikk · Medier">Ethics · Media</span></span>
+          <h3 class="card-title"><span data-en="Embracing Authenticity: Dove's AI-Free Promise &amp; Media Literacy" data-no="Omfavne autentisitet: Doves KI-frie løfte og medievitenskap">Embracing Authenticity: Dove's AI-Free Promise &amp; Media Literacy</span></h3>
+          <div class="card-footer"><span class="card-date">Apr 2024</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="ethics" href="https://aiadvisoryboards.wordpress.com/2024/01/26/the-human-domain-of-war-biotechnology-and-warfare-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Ethics · Technology" data-no="Etikk · Teknologi">Ethics · Technology</span></span>
+          <h3 class="card-title"><span data-en="The Human Domain of War: Biotechnology and Warfare" data-no="Krigens menneskelige domene: Bioteknologi og krigføring">The Human Domain of War: Biotechnology and Warfare</span></h3>
+          <div class="card-footer"><span class="card-date">Jan 2024</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ 2: CRITICAL THINKING ══════════════════════════ -->
+  <section class="section visible" id="sec-critical" data-cat="critical">
+    <div class="section-header">
+      <span class="section-icon">🔍</span>
+      <div>
+        <h2 class="section-title"><span data-en="Critical Thinking &amp; AI Literacy" data-no="Kritisk tenkning &amp; KI-kompetanse">Critical Thinking &amp; AI Literacy</span></h2>
+        <span class="section-count"><span data-en="6 lesson plans" data-no="6 undervisningsopplegg">6 lesson plans</span></span>
+      </div>
+      <p class="section-desc"><span data-en="Teaching students to evaluate, question, and reason about AI." data-no="Lær elevene å vurdere, stille spørsmål og resonnere om KI.">Teaching students to evaluate, question, and reason about AI.</span></p>
+    </div>
+    <div class="cards">
+      <a class="card" data-cat="critical" href="https://aiadvisoryboards.wordpress.com/2025/09/02/the-human-in-the-machine-navigating-ai-and-critical-thinking-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Critical Thinking" data-no="Kritisk tenkning">Critical Thinking</span></span>
+          <h3 class="card-title"><span data-en="The Human in the Machine: Navigating AI and Critical Thinking" data-no="Det menneskelige i maskinen: Navigere KI og kritisk tenkning">The Human in the Machine: Navigating AI and Critical Thinking</span></h3>
+          <div class="card-footer"><span class="card-date">Sep 2025</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="critical" href="https://aiadvisoryboards.wordpress.com/2024/05/26/debunking-the-brainbridge-ai-video-a-lesson-in-critical-thinking-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Critical Thinking · Deepfakes" data-no="Kritisk tenkning · Deepfakes">Critical Thinking · Deepfakes</span></span>
+          <h3 class="card-title"><span data-en='Debunking the "BrainBridge" AI Video: A Lesson in Critical Thinking' data-no='Avsløre "BrainBridge"-videoen: En leksjon i kritisk tenkning'>Debunking the "BrainBridge" AI Video: A Lesson in Critical Thinking</span></h3>
+          <div class="card-footer"><span class="card-date">May 2024</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="critical" href="https://aiadvisoryboards.wordpress.com/2025/05/08/decoding-ai-whose-english-does-it-speak-lesson-plan-english-1/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Critical Thinking · Language" data-no="Kritisk tenkning · Språk">Critical Thinking · Language</span></span>
+          <h3 class="card-title"><span data-en="Decoding AI: Whose English Does It Speak? (English 1)" data-no="Dekode KI: Hvems engelsk snakker den? (Engelsk 1)">Decoding AI: Whose English Does It Speak? (English 1)</span></h3>
+          <div class="card-footer"><span class="card-date">May 2025</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="critical" href="https://aiadvisoryboards.wordpress.com/2025/04/28/exploring-the-world-of-bot-farms-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Critical Thinking · Disinformation" data-no="Kritisk tenkning · Desinformasjon">Critical Thinking · Disinformation</span></span>
+          <h3 class="card-title"><span data-en="Exploring the World of Bot Farms" data-no="Utforske verden av bot-gårder">Exploring the World of Bot Farms</span></h3>
+          <div class="card-footer"><span class="card-date">Apr 2025</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="critical" href="https://aiadvisoryboards.wordpress.com/2025/01/15/analyzing-political-cartoons-and-exploring-ai-interpretation-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Critical Thinking · Visual Literacy" data-no="Kritisk tenkning · Visuell kompetanse">Critical Thinking · Visual Literacy</span></span>
+          <h3 class="card-title"><span data-en="Analyzing Political Cartoons and Exploring AI Interpretation" data-no="Analysere politiske karikaturer og utforske KI-tolkning">Analyzing Political Cartoons and Exploring AI Interpretation</span></h3>
+          <div class="card-footer"><span class="card-date">Jan 2025</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="critical" href="https://aiadvisoryboards.wordpress.com/2024/09/25/great-resource-for-english-2-students-in-norway-the-digitalist-papers-lesson-plans/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Critical Thinking · Resource" data-no="Kritisk tenkning · Ressurs">Critical Thinking · Resource</span></span>
+          <h3 class="card-title"><span data-en="The Digitalist Papers: A Great Resource for English 2 Students in Norway" data-no="The Digitalist Papers: En god ressurs for Engelsk 2-elever i Norge">The Digitalist Papers: A Great Resource for English 2 Students in Norway</span></h3>
+          <div class="card-footer"><span class="card-date">Sep 2024</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ 3: DEMOCRACY ══════════════════════════ -->
+  <section class="section visible" id="sec-democracy" data-cat="democracy">
+    <div class="section-header">
+      <span class="section-icon">🗳️</span>
+      <div>
+        <h2 class="section-title"><span data-en="Democracy, Politics &amp; Civic AI" data-no="Demokrati, politikk &amp; sivil KI">Democracy, Politics &amp; Civic AI</span></h2>
+        <span class="section-count"><span data-en="6 lesson plans" data-no="6 undervisningsopplegg">6 lesson plans</span></span>
+      </div>
+      <p class="section-desc"><span data-en="How AI shapes elections, democracy, and political discourse." data-no="Hvordan KI former valg, demokrati og politisk diskurs.">How AI shapes elections, democracy, and political discourse.</span></p>
+    </div>
+    <div class="cards">
+      <a class="card" data-cat="democracy" href="https://aiadvisoryboards.wordpress.com/2024/11/10/ai-and-democracy-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Democracy" data-no="Demokrati">Democracy</span></span>
+          <h3 class="card-title"><span data-en="AI and Democracy" data-no="KI og demokrati">AI and Democracy</span></h3>
+          <div class="card-footer"><span class="card-date">Nov 2024</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="democracy" href="https://aiadvisoryboards.wordpress.com/2024/10/23/exploring-u-s-elections-and-ais-role/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Democracy · Elections" data-no="Demokrati · Valg">Democracy · Elections</span></span>
+          <h3 class="card-title"><span data-en="Exploring U.S. Elections and AI's Role" data-no="Utforske amerikanske valg og KIs rolle">Exploring U.S. Elections and AI's Role</span></h3>
+          <div class="card-footer"><span class="card-date">Oct 2024</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="democracy" href="https://aiadvisoryboards.wordpress.com/2023/12/23/the-impact-of-ai-on-the-2024-elections-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Democracy · Elections" data-no="Demokrati · Valg">Democracy · Elections</span></span>
+          <h3 class="card-title"><span data-en="The Impact of AI on the 2024 Elections" data-no="KIs innvirkning på valget i 2024">The Impact of AI on the 2024 Elections</span></h3>
+          <div class="card-footer"><span class="card-date">Dec 2023</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="democracy" href="https://aiadvisoryboards.wordpress.com/2024/10/18/english-speaking-politicians-an-ai-enhanced-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Democracy · Language" data-no="Demokrati · Språk">Democracy · Language</span></span>
+          <h3 class="card-title"><span data-en="English-Speaking Politicians: An AI-Enhanced Lesson Plan" data-no="Engelsktalende politikere: Et KI-forbedret undervisningsopplegg">English-Speaking Politicians: An AI-Enhanced Lesson Plan</span></h3>
+          <div class="card-footer"><span class="card-date">Oct 2024</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="democracy" href="https://aiadvisoryboards.wordpress.com/2026/02/19/communities-ai-and-the-power-of-civic-voice-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Democracy · Civic Voice" data-no="Demokrati · Sivil stemme">Democracy · Civic Voice</span></span>
+          <h3 class="card-title"><span data-en="Communities, AI, and the Power of Civic Voice" data-no="Samfunn, KI og den sivile stemmens kraft">Communities, AI, and the Power of Civic Voice</span></h3>
+          <div class="card-footer"><span class="card-date">Feb 2026</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="democracy" href="https://aiadvisoryboards.wordpress.com/2026/05/08/the-quitgpt-movement-when-tech-becomes-political-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Democracy · Tech &amp; Politics" data-no="Demokrati · Teknologi &amp; politikk">Democracy · Tech &amp; Politics</span> <span class="new-badge">NEW</span></span>
+          <h3 class="card-title"><span data-en="The QuitGPT Movement: When Tech Becomes Political" data-no="QuitGPT-bevegelsen: Når teknologi blir politisk">The QuitGPT Movement: When Tech Becomes Political</span></h3>
+          <div class="card-footer"><span class="card-date">May 2026</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ 4: CREATIVE ══════════════════════════ -->
+  <section class="section visible" id="sec-creative" data-cat="creative">
+    <div class="section-header">
+      <span class="section-icon">🎨</span>
+      <div>
+        <h2 class="section-title"><span data-en="Creative &amp; Multimodal Learning" data-no="Kreativt &amp; multimodalt læringsarbeid">Creative &amp; Multimodal Learning</span></h2>
+        <span class="section-count"><span data-en="7 lesson plans" data-no="7 undervisningsopplegg">7 lesson plans</span></span>
+      </div>
+      <p class="section-desc"><span data-en="Art, music, Lego, food, sci-fi — AI as creative collaborator." data-no="Kunst, musikk, Lego, mat, sci-fi — KI som kreativ medarbeider.">Art, music, Lego, food, sci-fi — AI as creative collaborator.</span></p>
+    </div>
+    <div class="cards">
+      <a class="card" data-cat="creative" href="https://aiadvisoryboards.wordpress.com/2026/02/09/telling-american-stories-with-ai-and-lego-barbaras-latest-project/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Creative · Storytelling" data-no="Kreativt · Historiefortelling">Creative · Storytelling</span></span>
+          <h3 class="card-title"><span data-en="Telling American Stories with AI and Lego" data-no="Fortelle amerikanske historier med KI og Lego">Telling American Stories with AI and Lego</span></h3>
+          <div class="card-footer"><span class="card-date">Feb 2026</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="creative" href="https://aiadvisoryboards.wordpress.com/2024/02/21/music-ai-and-visual-art/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Creative · Music &amp; Art" data-no="Kreativt · Musikk &amp; kunst">Creative · Music &amp; Art</span></span>
+          <h3 class="card-title"><span data-en="Music, AI, and Visual Art" data-no="Musikk, KI og billedkunst">Music, AI, and Visual Art</span></h3>
+          <div class="card-footer"><span class="card-date">Feb 2024</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="creative" href="https://aiadvisoryboards.wordpress.com/2025/04/21/from-pixels-to-plates-recreating-ai-generated-food-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Creative · Food &amp; Art" data-no="Kreativt · Mat &amp; kunst">Creative · Food &amp; Art</span></span>
+          <h3 class="card-title"><span data-en="From Pixels to Plates: Recreating AI-Generated Food" data-no="Fra piksler til tallerkener: Gjenskape KI-generert mat">From Pixels to Plates: Recreating AI-Generated Food</span></h3>
+          <div class="card-footer"><span class="card-date">Apr 2025</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="creative" href="https://aiadvisoryboards.wordpress.com/2024/05/12/ai-media-production-challenge-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Creative · Media Production" data-no="Kreativt · Medieproduksjon">Creative · Media Production</span></span>
+          <h3 class="card-title"><span data-en="AI Media Production Challenge" data-no="KI medieproduksjonsutfordring">AI Media Production Challenge</span></h3>
+          <div class="card-footer"><span class="card-date">May 2024</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="creative" href="https://aiadvisoryboards.wordpress.com/2025/04/21/history-in-plastic-designing-action-figures-of-historical-figures-using-ai-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Creative · History" data-no="Kreativt · Historie">Creative · History</span></span>
+          <h3 class="card-title"><span data-en="History in Plastic: Designing Action Figures of Historical Figures Using AI" data-no="Historie i plast: Designe actionfigurer av historiske personer med KI">History in Plastic: Designing Action Figures of Historical Figures Using AI</span></h3>
+          <div class="card-footer"><span class="card-date">Apr 2025</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="creative" href="https://aiadvisoryboards.wordpress.com/2025/06/04/8-seconds-of-impact-silent-stories-loud-meanings-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Creative · Storytelling" data-no="Kreativt · Historiefortelling">Creative · Storytelling</span></span>
+          <h3 class="card-title"><span data-en="8 Seconds of Impact: Silent Stories, Loud Meanings" data-no="8 sekunder med påvirkning: Stille historier, høye meninger">8 Seconds of Impact: Silent Stories, Loud Meanings</span></h3>
+          <div class="card-footer"><span class="card-date">Jun 2025</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="creative" href="https://aiadvisoryboards.wordpress.com/2025/03/17/sell-it-share-it-a-creative-commercial-and-peer-feedback-challenge-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Creative · Communication" data-no="Kreativt · Kommunikasjon">Creative · Communication</span></span>
+          <h3 class="card-title"><span data-en="Sell It &amp; Share It: A Creative Commercial and Peer Feedback Challenge" data-no="Selg det og del det: En kreativ reklame- og tilbakemeldingsutfordring">Sell It &amp; Share It: A Creative Commercial and Peer Feedback Challenge</span></h3>
+          <div class="card-footer"><span class="card-date">Mar 2025</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ 5: AI WRITING & TOOLS ══════════════════════════ -->
+  <section class="section visible" id="sec-tools" data-cat="tools">
+    <div class="section-header">
+      <span class="section-icon">✍️</span>
+      <div>
+        <h2 class="section-title"><span data-en="AI Writing &amp; Tools in the Classroom" data-no="KI-skriving &amp; verktøy i klasserommet">AI Writing &amp; Tools in the Classroom</span></h2>
+        <span class="section-count"><span data-en="7 lesson plans" data-no="7 undervisningsopplegg">7 lesson plans</span></span>
+      </div>
+      <p class="section-desc"><span data-en="AI as writing partner, assessment tool, and reflective instrument." data-no="KI som skriveassistent, vurderingsverktøy og refleksjonsinstrument.">AI as writing partner, assessment tool, and reflective instrument.</span></p>
+    </div>
+    <div class="cards">
+      <a class="card featured-card" data-cat="tools" href="https://aiadvisoryboards.wordpress.com/2026/05/06/when-you-need-one-more-assignment-make-it-count/" target="_blank">
+        <div class="card-accent" style="background:#8a6a1a"></div>
+        <div class="card-body">
+          <span class="card-tag" style="color:#c8a040">✦ <span data-en="New · Assessment &amp; Writing" data-no="Ny · Vurdering &amp; skriving">New · Assessment &amp; Writing</span></span>
+          <h3 class="card-title"><span data-en="When You Need One More Assignment, Make It Count" data-no="Når du trenger én oppgave til, gjør den verdifull">When You Need One More Assignment, Make It Count</span> <span class="new-badge">NEW</span></h3>
+          <p style="color:#a09890;font-size:14px;line-height:1.6;margin-top:8px;"><span data-en="For borderline grades: require AI, then ask students to interrogate, verify and rewrite what it produces — making their thinking visible." data-no="For tvilsomme karakterer: krev KI, be elevene undersøke, verifisere og omskrive det — og gjøre tenkningen synlig.">For borderline grades: require AI, then ask students to interrogate, verify and rewrite what it produces — making their thinking visible.</span></p>
+          <div class="card-footer"><span class="card-date">May 2026</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="tools" href="https://aiadvisoryboards.wordpress.com/2026/05/05/stop-fighting-the-ai-teach-students-to-read-what-it-makes/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Writing · Pedagogy" data-no="Skriving · Pedagogikk">Writing · Pedagogy</span> <span class="new-badge">NEW</span></span>
+          <h3 class="card-title"><span data-en="Stop Fighting the AI. Teach Students to Read What It Makes." data-no="Slutt å bekjempe KI. Lær elevene å lese det den lager.">Stop Fighting the AI. Teach Students to Read What It Makes.</span></h3>
+          <div class="card-footer"><span class="card-date">May 2026</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="tools" href="https://aiadvisoryboards.wordpress.com/2024/05/25/top-15-ai-classroom-tasks-engaging-students-with-technology-and-reflection/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Tools · Overview" data-no="Verktøy · Oversikt">Tools · Overview</span></span>
+          <h3 class="card-title"><span data-en="Top 15 AI Classroom Tasks: Engaging Students with Technology and Reflection" data-no="Topp 15 KI-oppgaver: Engasjer elever med teknologi og refleksjon">Top 15 AI Classroom Tasks: Engaging Students with Technology and Reflection</span></h3>
+          <div class="card-footer"><span class="card-date">May 2024</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="tools" href="https://aiadvisoryboards.wordpress.com/2024/10/08/why-educators-and-students-love-notebook-lm/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Tools · NotebookLM" data-no="Verktøy · NotebookLM">Tools · NotebookLM</span></span>
+          <h3 class="card-title"><span data-en="Why Educators and Students Love NotebookLM" data-no="Hvorfor lærere og elever elsker NotebookLM">Why Educators and Students Love NotebookLM</span></h3>
+          <div class="card-footer"><span class="card-date">Oct 2024</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="tools" href="https://aiadvisoryboards.wordpress.com/2024/10/18/practicing-job-interviews-with-chatgpt/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Tools · ChatGPT" data-no="Verktøy · ChatGPT">Tools · ChatGPT</span></span>
+          <h3 class="card-title"><span data-en="Practicing Job Interviews with ChatGPT" data-no="Øve på jobbintervjuer med ChatGPT">Practicing Job Interviews with ChatGPT</span></h3>
+          <div class="card-footer"><span class="card-date">Oct 2024</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="tools" href="https://aiadvisoryboards.wordpress.com/2024/10/23/ai-assistant-matchmaking-challenge-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Tools · AI Assistants" data-no="Verktøy · KI-assistenter">Tools · AI Assistants</span></span>
+          <h3 class="card-title"><span data-en="AI Assistant Matchmaking Challenge" data-no="KI-assistent matchmaking-utfordring">AI Assistant Matchmaking Challenge</span></h3>
+          <div class="card-footer"><span class="card-date">Oct 2024</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="tools" href="https://aiadvisoryboards.wordpress.com/2024/08/06/using-googles-dear-sydney-ad-to-discuss-ai-in-education/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Tools · Reflection" data-no="Verktøy · Refleksjon">Tools · Reflection</span></span>
+          <h3 class="card-title"><span data-en='Using Google\'s "Dear Sydney" Ad to Discuss AI in Education' data-no='Bruke Googles "Dear Sydney"-reklame til å diskutere KI i utdanning'>Using Google's "Dear Sydney" Ad to Discuss AI in Education</span></h3>
+          <div class="card-footer"><span class="card-date">Aug 2024</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ 6: FUTURE ══════════════════════════ -->
+  <section class="section visible" id="sec-future" data-cat="future">
+    <div class="section-header">
+      <span class="section-icon">🚀</span>
+      <div>
+        <h2 class="section-title"><span data-en="Future, Careers &amp; the AI World" data-no="Fremtid, karriere &amp; KI-verdenen">Future, Careers &amp; the AI World</span></h2>
+        <span class="section-count"><span data-en="5 lesson plans" data-no="5 undervisningsopplegg">5 lesson plans</span></span>
+      </div>
+      <p class="section-desc"><span data-en="AI in the workplace, global competition, and emerging industries." data-no="KI i arbeidslivet, global konkurranse og fremvoksende næringer.">AI in the workplace, global competition, and emerging industries.</span></p>
+    </div>
+    <div class="cards">
+      <a class="card" data-cat="future" href="https://aiadvisoryboards.wordpress.com/2025/08/31/time100-ai-2025-exploring-it-careers-through-the-lens-of-ai-innovators-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Future · Careers" data-no="Fremtid · Karriere">Future · Careers</span></span>
+          <h3 class="card-title"><span data-en="TIME100 AI 2025: Exploring IT Careers Through the Lens of AI Innovators" data-no="TIME100 KI 2025: Utforske IT-karrierer gjennom KI-innovatørenes linse">TIME100 AI 2025: Exploring IT Careers Through the Lens of AI Innovators</span></h3>
+          <div class="card-footer"><span class="card-date">Aug 2025</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="future" href="https://aiadvisoryboards.wordpress.com/2025/01/19/ai-in-recruitment-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Future · Work" data-no="Fremtid · Arbeid">Future · Work</span></span>
+          <h3 class="card-title"><span data-en="AI in Recruitment" data-no="KI i rekruttering">AI in Recruitment</span></h3>
+          <div class="card-footer"><span class="card-date">Jan 2025</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="future" href="https://aiadvisoryboards.wordpress.com/2025/01/26/exploring-deepseek-and-the-global-ai-race-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Future · Global AI" data-no="Fremtid · Global KI">Future · Global AI</span></span>
+          <h3 class="card-title"><span data-en="Exploring DeepSeek and the Global AI Race" data-no="Utforske DeepSeek og det globale KI-kappløpet">Exploring DeepSeek and the Global AI Race</span></h3>
+          <div class="card-footer"><span class="card-date">Jan 2025</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="future" href="https://aiadvisoryboards.wordpress.com/2025/04/28/how-ai-robots-and-other-cutting-edge-technologies-can-keep-workers-safe-and-sound-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Future · Work &amp; Safety" data-no="Fremtid · Arbeid &amp; sikkerhet">Future · Work &amp; Safety</span></span>
+          <h3 class="card-title"><span data-en="How AI, Robots and Cutting-Edge Technologies Can Keep Workers Safe" data-no="Hvordan KI, roboter og ny teknologi kan beskytte arbeidere">How AI, Robots and Cutting-Edge Technologies Can Keep Workers Safe</span></h3>
+          <div class="card-footer"><span class="card-date">Apr 2025</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="future" href="https://aiadvisoryboards.wordpress.com/2025/01/06/leveraging-ai-to-innovate-in-the-food-industry-lesson-plan-restaurant-and-food-processing-programme/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="Future · Industry" data-no="Fremtid · Industri">Future · Industry</span></span>
+          <h3 class="card-title"><span data-en="Innovative Food Solutions Through AI (Restaurant &amp; Food Processing Programme)" data-no="Innovative matløsninger gjennom KI (Restaurant- og matforedlingsprogrammet)">Innovative Food Solutions Through AI (Restaurant &amp; Food Processing Programme)</span></h3>
+          <div class="card-footer"><span class="card-date">Jan 2025</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ 7: AI IDENTITY ══════════════════════════ -->
+  <section class="section visible" id="sec-society" data-cat="society">
+    <div class="section-header">
+      <span class="section-icon">🤖</span>
+      <div>
+        <h2 class="section-title"><span data-en="AI Identity, Personas &amp; Pop Culture" data-no="KI-identitet, personas &amp; popkultur">AI Identity, Personas &amp; Pop Culture</span></h2>
+        <span class="section-count"><span data-en="5 lesson plans" data-no="5 undervisningsopplegg">5 lesson plans</span></span>
+      </div>
+      <p class="section-desc"><span data-en="AI through sci-fi, friendship, cultural identity, and human connection." data-no="KI gjennom sci-fi, vennskap, kulturell identitet og menneskelig tilknytning.">AI through sci-fi, friendship, cultural identity, and human connection.</span></p>
+    </div>
+    <div class="cards">
+      <a class="card" data-cat="society" href="https://aiadvisoryboards.wordpress.com/2024/12/31/exploring-ai-personas-and-the-future-of-ai/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="AI Identity" data-no="KI-identitet">AI Identity</span></span>
+          <h3 class="card-title"><span data-en="Exploring AI Personas and the Future of AI" data-no="Utforske KI-personas og KIs fremtid">Exploring AI Personas and the Future of AI</span></h3>
+          <div class="card-footer"><span class="card-date">Dec 2024</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="society" href="https://aiadvisoryboards.wordpress.com/2024/08/14/ai-and-the-concept-of-friendship/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="AI Identity · Social" data-no="KI-identitet · Sosialt">AI Identity · Social</span></span>
+          <h3 class="card-title"><span data-en="AI and the Concept of Friendship" data-no="KI og vennskapsbegrepet">AI and the Concept of Friendship</span></h3>
+          <div class="card-footer"><span class="card-date">Aug 2024</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="society" href="https://aiadvisoryboards.wordpress.com/2023/09/11/joan-is-awful/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="AI Identity · Pop Culture" data-no="KI-identitet · Popkultur">AI Identity · Pop Culture</span></span>
+          <h3 class="card-title"><span data-en="Joan is Awful (Black Mirror Lesson Plan)" data-no="Joan er forferdelig (Black Mirror-undervisningsopplegg)">Joan is Awful (Black Mirror Lesson Plan)</span></h3>
+          <div class="card-footer"><span class="card-date">Sep 2023</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="society" href="https://aiadvisoryboards.wordpress.com/2024/06/03/exploring-a-thousand-suns-sci-fi-anthology-series/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="AI Identity · Sci-Fi" data-no="KI-identitet · Sci-fi">AI Identity · Sci-Fi</span></span>
+          <h3 class="card-title"><span data-en='"A Thousand Suns" Sci-Fi Anthology Series' data-no='"A Thousand Suns" sci-fi-antologiserie'>Exploring "A Thousand Suns" Sci-Fi Anthology Series</span></h3>
+          <div class="card-footer"><span class="card-date">Jun 2024</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" data-cat="society" href="https://aiadvisoryboards.wordpress.com/2024/05/30/exploring-ai-2041-by-kai-fu-lee-and-chen-qiufan-lesson-plan/" target="_blank">
+        <div class="card-accent"></div><div class="card-body">
+          <span class="card-tag"><span data-en="AI Identity · Literature" data-no="KI-identitet · Litteratur">AI Identity · Literature</span></span>
+          <h3 class="card-title"><span data-en="Exploring AI 2041 by Kai-Fu Lee and Chen Qiufan" data-no="Utforske KI 2041 av Kai-Fu Lee og Chen Qiufan">Exploring <em>AI 2041</em> by Kai-Fu Lee and Chen Qiufan</span></h3>
+          <div class="card-footer"><span class="card-date">May 2024</span><span class="card-arrow">→</span></div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>
+    <strong style="color:var(--paper)">Barbara Anna Zielonka</strong> ·
+    <span data-en="English Teacher" data-no="Engelsklærer">English Teacher</span> · Nannestad High School, Norway<br>
+    <span data-en="Original blog:" data-no="Originalblogg:">Original blog:</span>
+    <a href="https://aiadvisoryboards.wordpress.com/ai-in-my-classroom/" target="_blank">aiadvisoryboards.wordpress.com</a><br>
+    <span data-en="All posts link to originals. Last updated May 2026." data-no="Alle innlegg lenker til originaler. Sist oppdatert mai 2026.">All posts link to originals. Last updated May 2026.</span>
+  </p>
+</footer>
+
+<script>
+  // FILTER
+  function filterSection(cat, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const introband = document.getElementById('intro-band');
+    if (cat === 'all') {
+      document.querySelectorAll('section.section').forEach(s => s.classList.add('visible'));
+      introband.style.display = 'grid';
+    } else if (cat === 'compass') {
+      document.querySelectorAll('section.section').forEach(s => s.classList.remove('visible'));
+      document.getElementById('sec-compass').classList.add('visible');
+      document.getElementById('sec-humanskills').classList.add('visible');
+      introband.style.display = 'none';
+    } else {
+      introband.style.display = 'none';
+      document.querySelectorAll('section.section').forEach(s => {
+        s.classList.toggle('visible', s.getAttribute('data-cat') === cat);
+      });
+    }
+    window.scrollTo({ top: document.querySelector('.filter-bar').offsetTop - 10, behavior: 'smooth' });
+  }
+
+  // LANGUAGE TOGGLE — flags only, no text
+  function setLang(lang) {
+    document.getElementById('html-root').lang = lang === 'no' ? 'nb' : 'en';
+    document.getElementById('btn-en').classList.toggle('active-lang', lang === 'en');
+    document.getElementById('btn-no').classList.toggle('active-lang', lang === 'no');
+    document.querySelectorAll('[data-en]').forEach(el => {
+      const val = lang === 'no' ? el.getAttribute('data-no') : el.getAttribute('data-en');
+      if (val) el.innerHTML = val;
+    });
+  }
+</script>
+</body>
+</html>
